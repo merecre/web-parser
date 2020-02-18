@@ -5,7 +5,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
-public class URLParameters {
+public class URLParameterService {
     public final static String URL = "https://www.ss.lv/ru/transport/cars/";
 
     static String url;
@@ -14,7 +14,7 @@ public class URLParameters {
 
     static  String model;
 
-    public URLParameters(String url) {
+    public URLParameterService(String url) {
         this.url = url;
     }
 
@@ -36,6 +36,10 @@ public class URLParameters {
 
     public static String getModel() {
         return model;
+    }
+
+    public static boolean hasModel() {
+        return model != null;
     }
 }
 

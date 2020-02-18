@@ -33,6 +33,7 @@ public class ParserEngineTest {
 
     @Test
     public void autoWebParserTest() {
+
         WebParser<List<AutoAdvertisement>, String> parser =
                 new AutoWebParser(new JsoupWebCrawlerEngine(), new AutoAdvertisementComposer());
 

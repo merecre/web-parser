@@ -11,7 +11,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by DMC on 10/21/2019.
@@ -35,22 +37,16 @@ public class AutoWebParser implements WebParser<List<AutoAdvertisement>, String>
     @Override
     public List<AutoAdvertisement> parse(String url) {
 
-        List<AutoAdvertisement> advertisements = new ArrayList<>();
-
-        Elements carModelLinks = composeLinksFromDocument(url, URL_CAR_MODEL_SELECTOR);
-        for (Element link : carModelLinks) {
-            String carModelUrl = link.absUrl("href")+URL_FILTER_SELL;
-            //System.out.println("Model: " + carModelUrl);
-            Elements carLinks = composeLinksFromDocument(carModelUrl, URL_CAR_SELECTOR);
-            for (Element carLink : carLinks) {
-                String carUrl = carLink.absUrl("href");
-                //System.out.println("Car: " + carUrl);
-                Document document = engine.parse(carUrl);
-                advertisements.add(composeAdvertisement(document, carUrl));
-            }
-        }
-
-        return advertisements;
+       // List<AutoAdvertisement> advertisements = new ArrayList<>();
+        final Elements carModelLinks = composeLinksFromDocument(url, URL_CAR_MODEL_SELECTOR);
+        return carModelLinks.stream()
+                .map(link -> link.absUrl("href")+URL_FILTER_SELL)
+                .map(surl -> composeLinksFromDocument(surl, URL_CAR_SELECTOR))
+                .flatMap(Collection::stream)
+                .map(l->l.absUrl("href"))
+                .map(surl -> engine.parse(surl))
+                .map(document -> composeAdvertisement(document))
+                .collect(Collectors.toList());
     }
 
     private Elements composeLinksFromDocument(String url, String filter) {
@@ -58,6 +54,10 @@ public class AutoWebParser implements WebParser<List<AutoAdvertisement>, String>
     }
 
     private AutoAdvertisement composeAdvertisement(Document document, String carUrl) {
-        return composer.compose(document, carUrl);
+        return composer.compose(document);
+    }
+
+    private AutoAdvertisement composeAdvertisement(Document document) {
+        return composer.compose(document);
     }
 }

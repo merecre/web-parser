@@ -14,16 +14,17 @@ import java.time.format.DateTimeFormatter;
 public class AutoAdvertisementComposer implements AdvertisementComposer<Document> {
 
     @Override
-    public AutoAdvertisement compose(Document document, String carUrl) {
+    public AutoAdvertisement compose(Document document) {
         AutoAdvertisement advertisement = new AutoAdvertisement();
 
         Elements publishDate = document.select("td.msg_footer").select("td:contains(Дата: )");
         Elements carPrice = document.select("span.ads_price");
-        Elements carModel = document.select("td#TDO_31");
+        Elements carModel = document.select("td#tdo_31");
         Elements mileage =  document.select("td#tdo_16");
         Elements registrationDate = document.select("td#tdo_18");
         Elements engine = document.select("td#tdo_15");
         Elements transmission = document.select("td#tdo_35");
+        Elements features = document.select("b.auto_c");
 
         System.out.println("Car price: " + carPrice.first().text());
         System.out.println("Car model: " + carModel.first().text());
@@ -33,15 +34,17 @@ public class AutoAdvertisementComposer implements AdvertisementComposer<Document
             System.out.println("mileage: " + mileage.first().text());
         }
 
+        //features.forEach(f -> System.out.println("Feature:"+f.text()));
+
         Auto auto = new Auto();
         auto.setModel(carModel.first().text());
         auto.setMileage(mileage.hasText()?mileage.first().text():"?");
         auto.setRegistrationDate(registrationDate.first().text());
-        auto.setEngine(engine.first().text());
+        auto.setEngine(engine.hasText()?engine.first().text():"?");
         auto.setTransmission(transmission.first().text());
 
         //advertisement.setLink("<a href=" + "'" +carUrl +"'>" + carUrl + "</a>" );
-        advertisement.setLink(carUrl);
+        advertisement.setLink(document.location());
         advertisement.setPublishDate(formatPublishDate(publishDate.first().text()));
         advertisement.setPrice(carPrice.first().text());
         advertisement.setAuto(auto);
