@@ -15,7 +15,6 @@ public class JsoupWebCrawlerEngine implements WebCrawlerEngine<Document> {
         try {
             return Jsoup.connect(url).get();
         } catch (IOException e) {
-            System.out.println("Error");
             throw new RuntimeException("Connection error.");
         }
     }

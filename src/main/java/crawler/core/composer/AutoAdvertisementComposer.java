@@ -43,7 +43,6 @@ public class AutoAdvertisementComposer implements AdvertisementComposer<Document
         auto.setEngine(engine.hasText()?engine.first().text():"?");
         auto.setTransmission(transmission.first().text());
 
-        //advertisement.setLink("<a href=" + "'" +carUrl +"'>" + carUrl + "</a>" );
         advertisement.setLink(document.location());
         advertisement.setPublishDate(formatPublishDate(publishDate.first().text()));
         advertisement.setPrice(carPrice.first().text());

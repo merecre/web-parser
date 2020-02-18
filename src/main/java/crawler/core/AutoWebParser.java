@@ -37,7 +37,6 @@ public class AutoWebParser implements WebParser<List<AutoAdvertisement>, String>
     @Override
     public List<AutoAdvertisement> parse(String url) {
 
-       // List<AutoAdvertisement> advertisements = new ArrayList<>();
         final Elements carModelLinks = composeLinksFromDocument(url, URL_CAR_MODEL_SELECTOR);
         return carModelLinks.stream()
                 .map(link -> link.absUrl("href")+URL_FILTER_SELL)

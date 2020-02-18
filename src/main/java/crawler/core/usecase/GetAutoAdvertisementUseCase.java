@@ -6,16 +6,13 @@ import crawler.core.entities.AutoAdvertisement;
 import java.util.List;
 
 public class GetAutoAdvertisementUseCase {
-    WebParser<List<AutoAdvertisement>, String> parser;
-    String url;
+    private WebParser<List<AutoAdvertisement>, String> parser;
 
-    public GetAutoAdvertisementUseCase(WebParser<List<AutoAdvertisement>, String> parser, String url) {
+    public GetAutoAdvertisementUseCase(WebParser<List<AutoAdvertisement>, String> parser) {
         this.parser = parser;
-        this.url = url;
     }
 
-    public List<AutoAdvertisement> parse (WebParser<List<AutoAdvertisement>, String> parser, String url) {
-        System.out.println("URL: " + url);
+    public List<AutoAdvertisement> parse (String url) {
         return parser.parse(url);
     }
 }

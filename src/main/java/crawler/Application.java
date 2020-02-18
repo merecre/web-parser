@@ -41,11 +41,12 @@ public class Application implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
 
-        final String url = URLParameterService.buildURLFromArguments(args);
         WebParser<List<AutoAdvertisement>, String> parser =
                 new AutoWebParser(new JsoupWebCrawlerEngine(), new AutoAdvertisementComposer());
-        GetAutoAdvertisementUseCase parseAutoAdvertisementUseCase = new GetAutoAdvertisementUseCase(parser, url);
-        List<AutoAdvertisement> autoAdvertisement = parseAutoAdvertisementUseCase.parse(parser, url);
+        GetAutoAdvertisementUseCase parseAutoAdvertisementUseCase = new GetAutoAdvertisementUseCase(parser);
+
+        final String url = URLParameterService.buildURLFromArguments(args);
+        List<AutoAdvertisement> autoAdvertisement = parseAutoAdvertisementUseCase.parse(url);
 
         if (URLParameterService.hasModel()) {
             GetAutoAdvertisementFilteredByModelUseCase getAutoAdvertisementFilteredByModelUseCase =
