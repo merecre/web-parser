@@ -1,20 +1,23 @@
 package crawler.core.entities;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "auto_feature")
 public class AutoFeature {
 
     @Id
-    @Column(name = "id")
-    private  String name;
+    @Column(name = "name")
+    private String name;
 
-    private AutoFeature(String name) {
+    @ManyToMany(mappedBy = "features")
+    private Set<Auto> autos;
+
+    public AutoFeature() {}
+
+    public AutoFeature(String name) {
         this.name = name;
     }
 
@@ -29,5 +32,28 @@ public class AutoFeature {
     @Override
     public int hashCode() {
         return Objects.hash(name);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Set<Auto> getAutos() {
+        return autos;
+    }
+
+    public void setAutos(Set<Auto> autos) {
+        this.autos = autos;
+    }
+
+    @Override
+    public String toString() {
+        return "AutoFeature{" +
+                "name='" + name + '\'' +
+                '}';
     }
 }

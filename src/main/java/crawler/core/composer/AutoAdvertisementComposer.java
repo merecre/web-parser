@@ -2,11 +2,14 @@ package crawler.core.composer;
 
 import crawler.core.entities.Auto;
 import crawler.core.entities.AutoAdvertisement;
+import crawler.core.entities.AutoFeature;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by DMC on 10/22/2019.
@@ -24,7 +27,7 @@ public class AutoAdvertisementComposer implements AdvertisementComposer<Document
         Elements registrationDate = document.select("td#tdo_18");
         Elements engine = document.select("td#tdo_15");
         Elements transmission = document.select("td#tdo_35");
-        Elements features = document.select("b.auto_c");
+        Elements featureElements = document.select("b.auto_c");
 
         System.out.println("Car price: " + carPrice.first().text());
         System.out.println("Car model: " + carModel.first().text());
@@ -34,7 +37,10 @@ public class AutoAdvertisementComposer implements AdvertisementComposer<Document
             System.out.println("mileage: " + mileage.first().text());
         }
 
-        //features.forEach(f -> System.out.println("Feature:"+f.text()));
+        Set<AutoFeature> features = featureElements
+                .stream()
+                .map(e -> new AutoFeature(e.text()))
+                .collect(Collectors.toSet());
 
         Auto auto = new Auto();
         auto.setModel(carModel.first().text());
@@ -42,6 +48,7 @@ public class AutoAdvertisementComposer implements AdvertisementComposer<Document
         auto.setRegistrationDate(registrationDate.first().text());
         auto.setEngine(engine.hasText()?engine.first().text():"?");
         auto.setTransmission(transmission.first().text());
+        auto.setFeatures(features);
 
         advertisement.setLink(document.location());
         advertisement.setPublishDate(formatPublishDate(publishDate.first().text()));

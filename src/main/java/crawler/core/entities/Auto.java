@@ -29,6 +29,14 @@ public class Auto {
 
     private String transmission;
 
+    @ManyToMany
+    @JoinTable(
+            name = "auto_feature_xf",
+            joinColumns = { @JoinColumn(name = "id") },
+            inverseJoinColumns = { @JoinColumn(name = "name") }
+    )
+    private Set<AutoFeature> features;
+
     public String getModel() {
         return model;
     }
@@ -85,12 +93,20 @@ public class Auto {
         this.transmission = transmission;
     }
 
+    public Set<AutoFeature> getFeatures() {
+        return features;
+    }
+
+    public void setFeatures(Set<AutoFeature> features) {
+        this.features = features;
+    }
+
     @Override
     public String toString() {
         return "Auto{" +
-                "Id=" + id +
-                ", advertisements=" + advertisements +
+                "id=" + id +
                 ", model='" + model + '\'' +
+                ", features=" + features +
                 '}';
     }
 }

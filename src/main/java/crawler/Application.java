@@ -20,6 +20,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by DMC on 10/21/2019.
@@ -41,11 +42,17 @@ public class Application implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
 
+        final String url = URLParameterService.buildURLFromArguments(args);
+        populateCarAdvertisementRecordsAndPersist(url);
+
+        doCommand();
+    }
+
+    private void populateCarAdvertisementRecordsAndPersist(String url) {
         WebParser<List<AutoAdvertisement>, String> parser =
                 new AutoWebParser(new JsoupWebCrawlerEngine(), new AutoAdvertisementComposer());
         GetAutoAdvertisementUseCase parseAutoAdvertisementUseCase = new GetAutoAdvertisementUseCase(parser);
 
-        final String url = URLParameterService.buildURLFromArguments(args);
         List<AutoAdvertisement> autoAdvertisement = parseAutoAdvertisementUseCase.parse(url);
 
         if (URLParameterService.hasModel()) {
@@ -58,5 +65,11 @@ public class Application implements ApplicationRunner {
         if (!autoAdvertisement.isEmpty()) {
             advertisementService.saveAll(autoAdvertisement);
         }
+    }
+
+    private void doCommand() {
+        Set<AutoAdvertisement> autoAdvertisements = advertisementService.getAll();
+        System.out.println("DB Records: "+ autoAdvertisements.size());
+        autoAdvertisements.forEach(r -> System.out.println("FromDB: "+ r));
     }
 }
