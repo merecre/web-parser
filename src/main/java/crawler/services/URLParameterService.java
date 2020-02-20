@@ -1,45 +1,36 @@
 package crawler.services;
 
+import crawler.core.usecase.WebModel;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
+import java.util.stream.Collectors;
+
 public class URLParameterService {
     public final static String URL = "https://www.ss.lv/ru/transport/cars/";
 
-    static String url;
+    static WebModel webModel;
 
-    static  String make;
-
-    static  String model;
-
-    public URLParameterService(String url) {
-        this.url = url;
-    }
-
-    public static String buildURLFromArguments(ApplicationArguments args) {
+    public static WebModel buildURLFromArguments(ApplicationArguments args) {
         String url = URL;
+        webModel = new WebModel();
 
         if (args.containsOption("make")) {
-            make = args.getOptionValues("make").get(0);
-            url = url + make + "/";
+            final String makeFirst = args.getOptionValues("make").get(0);
+            url = url + makeFirst + "/";
+            webModel.setUrl(url);
+            webModel.setUrls(args.getOptionValues("make").stream()
+                    .map(make -> URL + make + "/")
+                    .collect(Collectors.toSet()));
         }
 
-        if (args.containsOption("model")) {
-            model = args.getOptionValues("model").get(0);
-            //url = url + model+ "/";
-        }
-
-        return url;
+        return webModel;
     }
 
-    public static String getModel() {
-        return model;
-    }
-
-    public static boolean hasModel() {
-        return model != null;
+    public static WebModel getWebModel() {
+        return webModel;
     }
 }
 

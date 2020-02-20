@@ -13,12 +13,13 @@ import org.jsoup.select.Elements;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
  * Created by DMC on 10/21/2019.
  */
-public class AutoWebParser implements WebParser<List<AutoAdvertisement>, String> {
+public class AutoWebParser implements WebParser<Set<AutoAdvertisement>, String> {
 
     public final static String URL = "https://www.ss.lv/ru/transport/cars/";
     public final static String URL_CAR_MODEL_SELECTOR = "a.a_category";
@@ -35,7 +36,7 @@ public class AutoWebParser implements WebParser<List<AutoAdvertisement>, String>
     }
 
     @Override
-    public List<AutoAdvertisement> parse(String url) {
+    public Set<AutoAdvertisement> parse(String url) {
 
         final Elements carModelLinks = composeLinksFromDocument(url, URL_CAR_MODEL_SELECTOR);
         return carModelLinks.stream()
@@ -45,7 +46,7 @@ public class AutoWebParser implements WebParser<List<AutoAdvertisement>, String>
                 .map(l->l.absUrl("href"))
                 .map(surl -> engine.parse(surl))
                 .map(document -> composeAdvertisement(document))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     private Elements composeLinksFromDocument(String url, String filter) {

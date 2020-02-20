@@ -1,14 +1,12 @@
 package crawler;
 
-import crawler.core.AutoWebParser;
-import crawler.core.WebParser;
-import crawler.core.composer.AutoAdvertisementComposer;
-import crawler.core.engine.JsoupWebCrawlerEngine;
-import crawler.core.entities.AutoAdvertisement;
-import crawler.core.usecase.GetAutoAdvertisementFilteredByModelUseCase;
-import crawler.core.usecase.GetAutoAdvertisementUseCase;
+import crawler.core.usecase.GetAutoAdvertisementFromWebUseCase;
+import crawler.core.usecase.SendNotificationAboutNewCarAdvertisementUseCase;
+import crawler.core.usecase.WebModel;
 import crawler.services.AutoAdvertisementService;
 import crawler.services.URLParameterService;
+import crawler.services.gateway.AutoAdvertisementWebGateway;
+import crawler.services.repository.AdvertisementRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,22 +16,27 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
-
-import java.util.List;
-import java.util.Set;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * Created by DMC on 10/21/2019.
  */
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"crawler.core", "crawler.services"})
+@ComponentScan(basePackages = {"crawler.configuration, crawler.core", "crawler.services"})
 @EntityScan("crawler.core.entities")
+@EnableScheduling
 public class Application implements ApplicationRunner {
     private static final Logger logger = LoggerFactory.getLogger(Application.class);
 
     @Autowired
-    private AutoAdvertisementService advertisementService;
+    private AdvertisementRepository advertisementRepository;
+
+    @Autowired
+    private AutoAdvertisementService autoAdvertisementDBGateway;
+
+    @Autowired
+    private AutoAdvertisementWebGateway autoAdvertisementWebGateway;
 
     public static void main(String... args) throws Exception {
         SpringApplication.run(Application.class, args);
@@ -42,34 +45,14 @@ public class Application implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
 
-        final String url = URLParameterService.buildURLFromArguments(args);
-        populateCarAdvertisementRecordsAndPersist(url);
+        final WebModel webModel = URLParameterService.buildURLFromArguments(args);
 
-        doCommand();
-    }
+        GetAutoAdvertisementFromWebUseCase parseAutoAdvertisementUseCase =
+                new GetAutoAdvertisementFromWebUseCase(autoAdvertisementWebGateway, autoAdvertisementDBGateway, webModel);
+        parseAutoAdvertisementUseCase.execute();
 
-    private void populateCarAdvertisementRecordsAndPersist(String url) {
-        WebParser<List<AutoAdvertisement>, String> parser =
-                new AutoWebParser(new JsoupWebCrawlerEngine(), new AutoAdvertisementComposer());
-        GetAutoAdvertisementUseCase parseAutoAdvertisementUseCase = new GetAutoAdvertisementUseCase(parser);
-
-        List<AutoAdvertisement> autoAdvertisement = parseAutoAdvertisementUseCase.parse(url);
-
-        if (URLParameterService.hasModel()) {
-            GetAutoAdvertisementFilteredByModelUseCase getAutoAdvertisementFilteredByModelUseCase =
-                    new GetAutoAdvertisementFilteredByModelUseCase();
-            final String model = URLParameterService.getModel().toUpperCase();
-            autoAdvertisement = getAutoAdvertisementFilteredByModelUseCase.getAutoAdvertisementByModel(autoAdvertisement, model);
-        }
-
-        if (!autoAdvertisement.isEmpty()) {
-            advertisementService.saveAll(autoAdvertisement);
-        }
-    }
-
-    private void doCommand() {
-        Set<AutoAdvertisement> autoAdvertisements = advertisementService.getAll();
-        System.out.println("DB Records: "+ autoAdvertisements.size());
-        autoAdvertisements.forEach(r -> System.out.println("FromDB: "+ r));
+        SendNotificationAboutNewCarAdvertisementUseCase sendNotificationAboutNewCarAdvertisementUseCase =
+                new SendNotificationAboutNewCarAdvertisementUseCase(autoAdvertisementDBGateway);
+        sendNotificationAboutNewCarAdvertisementUseCase.execute();
     }
 }

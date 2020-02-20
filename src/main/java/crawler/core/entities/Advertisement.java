@@ -24,6 +24,8 @@ public abstract class Advertisement {
 
     private java.time.LocalDateTime publishDate;
 
+    private Boolean visited;
+
     public LocalDateTime getPublishDate() {
         return publishDate;
     }
@@ -62,6 +64,14 @@ public abstract class Advertisement {
 
     public void setLink(String link) {
         this.link = link;
+    }
+
+    public Boolean getVisited() {
+        return visited;
+    }
+
+    public void setVisited(Boolean visited) {
+        this.visited = visited;
     }
 
     @Override

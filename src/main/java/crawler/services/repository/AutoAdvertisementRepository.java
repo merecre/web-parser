@@ -4,7 +4,9 @@ import crawler.core.entities.Auto;
 import crawler.core.entities.AutoAdvertisement;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -14,6 +16,10 @@ import java.util.Set;
 public interface AutoAdvertisementRepository extends CrudRepository<AutoAdvertisement, Long> {
     List<AutoAdvertisement> findByAuto(Auto auto);
 
-    @Query("SELECT ad, auto, feature FROM AutoAdvertisement ad left JOIN ad.auto auto LEFT JOIN fetch auto.features feature")
+    @Query("SELECT ad, auto, feature FROM AutoAdvertisement ad LEFT JOIN ad.auto auto LEFT JOIN fetch auto.features feature")
     Set<AutoAdvertisement> findAll();
+
+    @Query("SELECT ad, auto, feature FROM AutoAdvertisement ad LEFT JOIN ad.auto auto LEFT JOIN fetch auto.features feature" +
+            " WHERE ad.publishDate BETWEEN :startDate AND :endDate")
+    Set<AutoAdvertisement> findByPublishDateBetween(@Param("startDate")LocalDateTime startDateTime, @Param("endDate")LocalDateTime endDate);
 }
