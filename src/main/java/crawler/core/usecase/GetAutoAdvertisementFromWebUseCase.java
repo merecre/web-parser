@@ -1,10 +1,6 @@
 package crawler.core.usecase;
 
-import crawler.core.WebParser;
-import crawler.core.entities.AutoAdvertisement;
-
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 public class GetAutoAdvertisementFromWebUseCase implements UseCaseCommand<Boolean>{
@@ -21,14 +17,13 @@ public class GetAutoAdvertisementFromWebUseCase implements UseCaseCommand<Boolea
     }
 
     public Boolean execute() {
-        Set<String> urls = webModel.getUrls();
-        urls.stream().forEach(url -> {
-                Set<AutoAdvertisement> autoAdvertisement = autoAdvertisementUseCaseWebGateway.getAutoAdvertisements(url);
-                if (!autoAdvertisement.isEmpty()) {
-                    autoAdvertisementUseCaseDBGateway.persistAll(autoAdvertisement);
-                }
-            });
+        final Set<String> urls = webModel.getUrls();
 
+        urls.stream()
+                .map(url -> autoAdvertisementUseCaseWebGateway.getAutoAdvertisements(url))
+                .flatMap(Collection::stream)
+                .filter(a->!autoAdvertisementUseCaseDBGateway.isExistByLink(a))
+                .forEach(a->autoAdvertisementUseCaseDBGateway.persistSingle(a));
         return Boolean.TRUE;
     }
 }

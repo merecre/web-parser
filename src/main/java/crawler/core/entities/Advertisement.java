@@ -1,6 +1,7 @@
 package crawler.core.entities;
 
 import javax.persistence.*;
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 /**
@@ -16,7 +17,7 @@ public abstract class Advertisement {
     @Column(name = "id")
     private long id;
 
-    private String price;
+    BigInteger price;
 
     private String currency;
 
@@ -42,11 +43,11 @@ public abstract class Advertisement {
         this.currency = currency;
     }
 
-    public String getPrice() {
+    public BigInteger getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(BigInteger price) {
         this.price = price;
     }
 

@@ -1,7 +1,8 @@
 package crawler.core.entities;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.math.BigInteger;
+import java.time.LocalDate;
 import java.util.Set;
 
 /**
@@ -21,11 +22,13 @@ public class Auto {
 
     private String model;
 
-    private String mileage;
+    private BigInteger mileage;
 
-    private String registrationDate;
+    private java.time.LocalDate registrationDate;
 
     private String engine;
+
+    private String engineType;
 
     private String transmission;
 
@@ -61,19 +64,19 @@ public class Auto {
         this.id = id;
     }
 
-    public String getMileage() {
+    public BigInteger getMileage() {
         return mileage;
     }
 
-    public void setMileage(String mileage) {
+    public void setMileage(BigInteger mileage) {
         this.mileage = mileage;
     }
 
-    public String getRegistrationDate() {
+    public LocalDate getRegistrationDate() {
         return registrationDate;
     }
 
-    public void setRegistrationDate(String registrationDate) {
+    public void setRegistrationDate(LocalDate registrationDate) {
         this.registrationDate = registrationDate;
     }
 
@@ -99,6 +102,14 @@ public class Auto {
 
     public void setFeatures(Set<AutoFeature> features) {
         this.features = features;
+    }
+
+    public String getEngineType() {
+        return engineType;
+    }
+
+    public void setEngineType(String engineType) {
+        this.engineType = engineType;
     }
 
     @Override

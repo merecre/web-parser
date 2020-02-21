@@ -8,4 +8,5 @@ public interface AutoAdvertisementUseCaseDBGateway {
     Set<AutoAdvertisement> getNewestAutoAdvertisement();
     void persistAll(Set<AutoAdvertisement> autoAdvertisements);
     void persistSingle(AutoAdvertisement autoAdvertisement);
+    Boolean isExistByLink(AutoAdvertisement autoAdvertisement);
 }

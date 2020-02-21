@@ -1,25 +1,26 @@
 package crawler.configuration;
 
-import crawler.core.usecase.GetAutoAdvertisementFromWebUseCase;
-import crawler.core.usecase.SendNotificationAboutNewCarAdvertisementUseCase;
-import crawler.core.usecase.UseCaseCommand;
-import crawler.core.usecase.WebModel;
+import crawler.core.usecase.*;
 import crawler.services.AutoAdvertisementService;
 import crawler.services.URLParameterService;
 import crawler.services.gateway.AutoAdvertisementWebGateway;
+import crawler.services.notification.Mail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
 
 @org.springframework.context.annotation.Configuration
-public class Configuration {
+public class BusinessFlowConfiguration {
 
     @Autowired
     private ApplicationArguments args;
 
     @Autowired
     private AutoAdvertisementService autoAdvertisementDBGateway;
+
+    @Autowired
+    private NotificationService<Mail> mailNotificationService;
 
     @Bean
     public WebModel webModel() {
@@ -42,6 +43,6 @@ public class Configuration {
     @Bean(name = "senNotificationAboutNewAutoAdvertisement")
     @Order(2)
     public UseCaseCommand<Boolean> sendNotificationAboutNewCarAdvertisementUseCase() {
-        return new SendNotificationAboutNewCarAdvertisementUseCase(autoAdvertisementDBGateway);
+        return new SendNotificationAboutNewCarAdvertisementUseCase(autoAdvertisementDBGateway, mailNotificationService);
     }
 }

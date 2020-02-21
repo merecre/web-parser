@@ -16,10 +16,14 @@ import java.util.Set;
 public interface AutoAdvertisementRepository extends CrudRepository<AutoAdvertisement, Long> {
     List<AutoAdvertisement> findByAuto(Auto auto);
 
-    @Query("SELECT ad, auto, feature FROM AutoAdvertisement ad LEFT JOIN ad.auto auto LEFT JOIN fetch auto.features feature")
+    @Query("SELECT ad, auto, feature FROM #{#entityName} ad LEFT JOIN ad.auto auto LEFT JOIN fetch auto.features feature")
     Set<AutoAdvertisement> findAll();
 
-    @Query("SELECT ad, auto, feature FROM AutoAdvertisement ad LEFT JOIN ad.auto auto LEFT JOIN fetch auto.features feature" +
-            " WHERE ad.publishDate BETWEEN :startDate AND :endDate")
+    @Query("SELECT ad, auto, feature FROM #{#entityName} ad LEFT JOIN ad.auto auto LEFT JOIN fetch auto.features feature" +
+            " WHERE ad.publishDate BETWEEN :startDate AND :endDate AND ad.price <= 22500" +
+            " AND YEAR(auto.registrationDate) >= '2014' AND auto.mileage < '100000' AND" +
+            " auto.engine > '1.4' AND auto.transmission LIKE 'Автомат%'")
     Set<AutoAdvertisement> findByPublishDateBetween(@Param("startDate")LocalDateTime startDateTime, @Param("endDate")LocalDateTime endDate);
+
+    AutoAdvertisement findByLink(String link);
 }

@@ -66,4 +66,8 @@ public class AutoAdvertisementService implements AutoAdvertisementUseCaseDBGatew
     public void persistSingle(AutoAdvertisement autoAdvertisement) {
         save(autoAdvertisement);
     }
+
+    public Boolean isExistByLink(AutoAdvertisement autoAdvertisement) {
+        return repository.findByLink(autoAdvertisement.getLink()) != null;
+    }
 }

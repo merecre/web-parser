@@ -1,21 +1,28 @@
 package crawler.services;
 
-import crawler.core.usecase.WebModel;
+import crawler.core.usecase.UseCaseCommand;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.List;
 
 @Component
 public class ScheduleService {
 
-    @Scheduled(fixedRate = 1000*60)
-    public void run() {
+    private static final Logger logger = LoggerFactory.getLogger(ScheduleService.class);
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        Date now = new Date();
-        String strDate = sdf.format(now);
-        System.out.println("Fixed Rate scheduler test: " + strDate);
+    @Autowired
+    private List<UseCaseCommand<Boolean>> businessFlowCommands;
+
+    @Scheduled(fixedRate = 1000*60*60)
+    public void run() {
+        logger.info("Scheduled task is being started.");
+        populateAutoAdvertisementsAndSendNotification();
+    }
+
+    private void populateAutoAdvertisementsAndSendNotification() {
+        businessFlowCommands.forEach(UseCaseCommand::execute);
     }
 }

@@ -15,6 +15,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by DMC on 10/21/2019.
@@ -34,10 +35,10 @@ public class ParserEngineTest {
     @Test
     public void autoWebParserTest() {
 
-        WebParser<List<AutoAdvertisement>, String> parser =
+        WebParser<Set<AutoAdvertisement>, String> parser =
                 new AutoWebParser(new JsoupWebCrawlerEngine(), new AutoAdvertisementComposer());
 
-        List<AutoAdvertisement> autoAdvertisement = parser.parse(AutoWebParser.URL+"audi/");
+        Set<AutoAdvertisement> autoAdvertisement = parser.parse(AutoWebParser.URL+"audi/");
         autoAdvertisement.forEach(a ->System.out.println("Advertisement:" + a));
     }
 }
